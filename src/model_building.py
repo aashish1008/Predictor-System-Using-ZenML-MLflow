@@ -10,6 +10,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 
 class ModelBuildingStrategy(ABC):
+    @abstractmethod
     def build_and_train_model(self, X_train: pd.DataFrame, y_train: pd.Series) -> Pipeline:
         pass
 

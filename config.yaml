@@ -1,0 +1,12 @@
+enable_cache: False
+
+settings:
+  docker:
+    required_integrations:
+      - mlflow
+
+model:
+  name: attrition_predictor
+  license: Apache 2.0
+  description: Employee attrition prediction.
+  tags: [ "classification", "attrition", "attrition_prediction" ]
