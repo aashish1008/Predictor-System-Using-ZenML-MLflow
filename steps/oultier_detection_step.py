@@ -17,8 +17,10 @@ def outlier_detection_step(df: pd.DataFrame, strategy: str, method: str = "remov
     if not isinstance(df, pd.DataFrame):
         logging.error(f"Expected pandas DataFrame, got {type(df)} instead.")
 
-    df_numeric = df.select_dtypes(include=[int, float])
-    global outlier_detector
+    logging.info(f"Starting outlier detection step with DataFrame of shape: {df.shape}")
+
+    # df_numeric = df.select_dtypes(include=[int, float])
+
     if strategy == "zscore":
         outlier_detector = OutlierDetector(ZScoreOutlierDetection(threshold=3))
     elif strategy == "IQR":
@@ -26,8 +28,7 @@ def outlier_detection_step(df: pd.DataFrame, strategy: str, method: str = "remov
     else:
         logging.error(f"Choose the correct strategy zscore or IQR. You choose : {strategy}")
 
-    outliers = outlier_detector.detect_outliers(df_numeric)
-
-    df_cleaned = outlier_detector.handle_outliers(df_numeric, method=method)
+    df_cleaned = outlier_detector.handle_outliers(df, method=method)
+    logging.info(f"Outlier detection completed. Cleaned DataFrame shape: {df_cleaned.shape}")
 
     return df_cleaned

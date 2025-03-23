@@ -17,9 +17,9 @@ class SimpleTrainTestSplits(DataSplittingStrategy):
         self.test_size = test_size
         self.random_state = random_state
 
-    def split_data(self, df: pd.DataFrame, target_column):
+    def split_data(self, df: pd.DataFrame, target_column: str):
         logging.info("Performing simple train-test split.")
-        X = df.drop(columns=[target_column])
+        X = df.drop(columns=target_column, axis=1)
         y = df[target_column]
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size,
@@ -38,3 +38,11 @@ class DataSplitter:
     def split(self, df: pd.DataFrame, target_column: str):
         logging.info("Splitting data using the selected strategy.")
         return self._strategy.split_data(df, target_column)
+
+
+# if __name__ == "__main__":
+#     splitter = DataSplitter(SimpleTrainTestSplits())
+#     df = pd.read_csv("extracted_data/attrition_dataset.csv")
+#     X, _, y, _ = splitter.split(df, "Attrition")
+#     print(X)
+#     print(y)

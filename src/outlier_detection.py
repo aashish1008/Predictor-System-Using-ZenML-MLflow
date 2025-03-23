@@ -78,10 +78,8 @@ class OutlierDetector:
         logging.info("Outlier visualization completed.")
 
 
-if __name__ == "__main__":
-    df = pd.read_csv("extracted_data/attrition_dataset.csv")
-    outlier_detectors = OutlierDetector(IQROutlierDetection())
-    outlier_detectors.detect_outliers(df)
-
-    outlier_detectors.set_strategy(ZScoreOutlierDetection(threshold=1))
-    outlier_detectors.detect_outliers(df)
+# if __name__ == "__main__":
+#     df = pd.read_csv("extracted_data/attrition_dataset.csv")
+#     outlier = OutlierDetector(ZScoreOutlierDetection(threshold=3))
+#     df_cleaned = outlier.handle_outliers(df)
+#     print(df_cleaned)
