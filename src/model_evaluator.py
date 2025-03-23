@@ -2,7 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 import pandas as pd
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.metrics import mean_squared_error, r2_score
 
 # Setup logging configuration
@@ -50,13 +50,15 @@ class ClassificationModelEvaluation(ModelEvaluationStrategy):
 
         logging.info("Calculating evaluation metrics..")
         accuracy = accuracy_score(y_test, y_pred)
-        precision, recall, f1_score = precision_recall_fscore_support(y_test, y_pred)
+        precision = precision_score(y_test, y_pred, pos_label="Yes")
+        recall = recall_score(y_test, y_pred, pos_label="Yes")
+        f1 = f1_score(y_test, y_pred, pos_label="Yes")
 
         metrics = {
             "Accuracy Score": accuracy,
             "Precision Score": precision,
             "Recall Score": recall,
-            "F1 Score": f1_score
+            "F1 Score": f1
         }
 
         logging.info(f"Model Evaluation Metrics: {metrics}")
@@ -73,9 +75,6 @@ class ModelEvaluator:
         logging.info("Switching model evaluation strategy.")
         self._strategy = strategy
 
-    def evaluate(self, model:Pipeline, X_test: pd.DataFrame, y_test: pd.Series) -> dict:
+    def evaluate(self, model: Pipeline, X_test: pd.DataFrame, y_test: pd.Series) -> dict:
         logging.info("Evaluating the model using the selected strategy..")
         return self._strategy.evaluate_model(model, X_test, y_test)
-
-
-

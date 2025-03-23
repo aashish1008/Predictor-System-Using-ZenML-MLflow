@@ -19,7 +19,7 @@ def model_evaluator_step(
 
     evaluator = ModelEvaluator(ClassificationModelEvaluation())
 
-    evaluation_metrics = evaluator.evaluate(trained_model.named_steps["models"], X_test_processed, y_test)
+    evaluation_metrics = evaluator.evaluate(trained_model.named_steps["model"], X_test_processed, y_test)
 
     if not isinstance(evaluation_metrics, dict):
         raise ValueError("Evaluation metrics must be returned as a dictionary..")

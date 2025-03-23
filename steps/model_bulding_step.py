@@ -1,6 +1,8 @@
 from zenml import step
 import logging
-from typing import Annotated
+from typing_extensions import Annotated
+from zenml import ArtifactConfig, save_artifact, step
+from zenml.enums import ArtifactType
 import mlflow
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -8,7 +10,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
-from zenml import ArtifactConfig, step, Model
+from zenml import step, Model
 from zenml.client import Client
 
 experiment_tracker = Client().active_stack.experiment_tracker
@@ -22,7 +24,10 @@ model = Model(
 
 
 @step(enable_cache=False, experiment_tracker=experiment_tracker.name, model=model)
-def model_building_step(X_train: pd.DataFrame, y_train: pd.Series, model_name:str = "logistic") -> Annotated[Pipeline, ArtifactConfig(name="sklearn_pipeline", is_model_artifact=True)]:
+def model_building_step(X_train: pd.DataFrame, y_train: pd.Series, model_name: str = "logistic") -> Annotated[
+    Pipeline,
+    ArtifactConfig(name="sklearn_pipeline", artifact_type=ArtifactType.MODEL)
+]:
     # Builds and trains a Linear Regression model using scikit-learn wrapped in a pipeline.
     if not isinstance(X_train, pd.DataFrame):
         raise TypeError("X_train must be a pandas DataFrame")
@@ -37,7 +42,7 @@ def model_building_step(X_train: pd.DataFrame, y_train: pd.Series, model_name:st
     logging.info(f"Numerical columns: {numerical_cols.tolist()}")
 
     # define preprocessing for categorical and numerical features
-    numerical_transformer = SimpleImputer(strategy="mean")
+    numerical_transformer = SimpleImputer(strategy="median")
     categorical_transformer = Pipeline(
         steps=[
             ("imputer", SimpleImputer(strategy="most_frequent")),
@@ -64,7 +69,7 @@ def model_building_step(X_train: pd.DataFrame, y_train: pd.Series, model_name:st
 
     # start an MLflow ruu to log the model training process
     if not mlflow.active_run():
-        mlflow.start_run() # Start a new MLflow run if there isn't one activa
+        mlflow.start_run()  # Start a new MLflow run if there isn't one activa
 
     try:
         # enable autologging for scikit-learn to automatically capture model metrics, parameters, and artifacts
@@ -95,9 +100,6 @@ def model_building_step(X_train: pd.DataFrame, y_train: pd.Series, model_name:st
         # end the MLflow run
         mlflow.end_run()
 
+    save_artifact(pipeline, name="model", artifact_type=ArtifactType.MODEL)
+
     return pipeline
-
-
-
-
-
